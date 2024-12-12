@@ -1,4 +1,7 @@
 #include "utils.h"
+#include "prompt.h"
+
+extern Prompt* ptr;
 
 void trim(std::string& str)
 {
@@ -11,3 +14,14 @@ void trim(std::string& str)
     str.pop_back();
 }
 
+void ctrl_c_handler(int num)
+{
+    if(ptr)
+    kill(-ptr->child_pgid, SIGKILL);
+}
+
+void ctrl_z_handler(int num)
+{
+    if(ptr)
+    ptr->background_process=true;
+}

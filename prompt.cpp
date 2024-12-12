@@ -2,13 +2,17 @@
 #include "utils.h"
 #include <sys/wait.h>
 
-
 Prompt::Prompt(std::string prompt) : prompt(prompt){
+   background_process=false;
+   child_pgid=0;
    parse();
 }
 
 void Prompt::parse()
 {        
+   if(prompt.back()=='&')
+   {background_process=true;prompt.pop_back();}
+
    std::istringstream ss(prompt);
    std::string command;
 
@@ -20,8 +24,14 @@ void Prompt::parse()
 
 void Prompt::wait_for_child_process()
 {
-   for (int i = 0; i < commands.size(); i++)
-      wait(NULL);
+   int status;
+   pid_t pid;
+
+   while(true){
+      pid = waitpid(-child_pgid, &status, WNOHANG);
+      if(background_process || pid==-1 )
+      break;
+   }
 }
 
 void Prompt::execute()
@@ -44,7 +54,9 @@ void Prompt::execute()
       }
       if (pid == 0)
       {
-
+         signal (SIGTSTP, SIG_IGN);
+         signal (SIGINT, SIG_IGN); 
+         
          commands[i].set_inp_out();
          if (i != 0)
          {
@@ -55,6 +67,12 @@ void Prompt::execute()
                exit(1);
             }
             close(o_pp[0]);
+            setpgid(0, child_pgid);
+         }
+         else
+         {
+            child_pgid=getpid();
+            setpgrp();
          }
          if (i != commands.size() - 1)
          {
@@ -75,6 +93,13 @@ void Prompt::execute()
             close(o_pp[0]);
             close(o_pp[1]);
          }
+         else{
+            child_pgid=pid;
+            signal (SIGTSTP, ctrl_z_handler);
+            signal (SIGINT, ctrl_c_handler); 
+         }
+
+         setpgid(pid, child_pgid);
          o_pp[0] = n_pp[0];
          o_pp[1] = n_pp[1];
       }
