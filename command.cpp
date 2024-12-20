@@ -63,13 +63,13 @@ void Command::parse_args(const std::string &to_execute)
             {
                 if (to_execute[j] == to_execute[i])
                 {
-                    args.push_back(to_execute.substr(i, j - i - 1));
+                    args.push_back(to_execute.substr(i+1, j - i - 1));
                     i = j;
                     break;
                 }
                 else if (to_execute[j] == '\\' && j + 1 < to_execute.size())
                     j++;
-                else if (j = to_execute.size() - 1)
+                else if (j == to_execute.size() - 1)
                 {
                     args.push_back(to_execute.substr(i));
                     i = j;

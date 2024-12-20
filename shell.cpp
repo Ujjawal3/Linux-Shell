@@ -3,6 +3,7 @@
 #include <sys/wait.h>
 #include <bits/stdc++.h>
 #include <readline/readline.h>
+// #include <filesystem>
 
 
 Prompt* ptr;
@@ -14,7 +15,9 @@ int main()
         signal (SIGTSTP, SIG_IGN);
         signal (SIGINT, SIG_IGN); 
 
-        char* userInput = readline(">> ");
+        std::string prompt_string="\033[1;31m" + std::filesystem::current_path().string() + "\033[0m" + "$ " ;
+
+        char* userInput = readline(prompt_string.c_str());
         std::string cmd(userInput);
 
         trim(cmd);
@@ -29,7 +32,9 @@ int main()
         }
         ptr=&prompt;
         prompt.execute();
+
         ptr=nullptr;
+        free(userInput);
     }
 
     return 0;
