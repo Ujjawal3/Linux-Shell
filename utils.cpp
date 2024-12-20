@@ -3,6 +3,21 @@
 
 extern Prompt* ptr;
 
+void cd(std::string path)
+{
+    if (path == "~")
+    {
+        path = getenv("HOME");
+    }
+    int chdir_status = chdir(path.c_str());
+    if (chdir_status == -1)
+    {
+        std::cout << "Unable to cd in " << path << std::endl;
+    }
+    return;
+}
+
+
 void trim(std::string& str)
 {
     for(int i=0;i<str.size();i++)

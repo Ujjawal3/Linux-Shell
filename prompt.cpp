@@ -38,8 +38,12 @@ void Prompt::execute()
 {
    int o_pp[2], n_pp[2];
 
+   bool pipe_initialized=false;
+
    for (int i = 0; i < commands.size(); i++)
    {
+      if(commands[i].exec_spl_commands())continue;
+
       if (i != commands.size() - 1 && pipe(n_pp) == -1)
       {
          std::cout << "pipe() failed\n";
@@ -58,7 +62,7 @@ void Prompt::execute()
          signal (SIGINT, SIG_IGN); 
          
          commands[i].set_inp_out();
-         if (i != 0)
+         if (pipe_initialized)
          {
             close(o_pp[1]);
             if (dup2(o_pp[0], commands[i].inp) < 0)
@@ -71,6 +75,7 @@ void Prompt::execute()
          }
          else
          {
+            pipe_initialized=true;
             child_pgid=getpid();
             setpgrp();
          }
@@ -88,12 +93,13 @@ void Prompt::execute()
       }
       else
       {
-         if (i != 0)
+         if (pipe_initialized)
          {
             close(o_pp[0]);
             close(o_pp[1]);
          }
          else{
+            pipe_initialized=true;
             child_pgid=pid;
             signal (SIGTSTP, ctrl_z_handler);
             signal (SIGINT, ctrl_c_handler); 

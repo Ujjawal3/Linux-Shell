@@ -16,4 +16,5 @@ class Command{
     ~Command();
     void execute();
     void set_inp_out();
+    bool exec_spl_commands();
 };

@@ -26,10 +26,6 @@ int main()
             continue;
 
         Prompt prompt(cmd);
-        if(!prompt.commands[0].args.empty() && prompt.commands[0].args[0]=="exit")
-        {
-            return 0;
-        }
         ptr=&prompt;
         prompt.execute();
 

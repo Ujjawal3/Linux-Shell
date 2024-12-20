@@ -145,3 +145,21 @@ void Command::set_inp_out()
         }
     }
 }
+
+bool Command::exec_spl_commands()
+{
+    if(!args.empty())
+    {
+        if(args[0]=="exit")
+        exit(0);
+        else if(args[0]=="cd")
+        {
+            std::string path="~";
+            if(args.size()>=2)
+            path=args[1];
+            cd(path);
+            return true;
+        }
+    }
+    return false;
+}
