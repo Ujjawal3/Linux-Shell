@@ -1,11 +1,12 @@
 
-shell: shell.o command.o prompt.o utils.o 
-	g++ -Wall shell.o command.o prompt.o utils.o -o shell -lreadline
+shell: shell.o command.o prompt.o utils.o history.o
+	g++ -Wall shell.o command.o prompt.o utils.o history.o -o shell -lreadline
 
-shell.o: shell.cpp command.cpp command.h prompt.h prompt.cpp utils.h utils.cpp
+shell.o: shell.cpp command.cpp command.h prompt.h prompt.cpp utils.h utils.cpp history.h history.cpp
 command.o: utils.h command.cpp command.h
 prompt.o: prompt.h prompt.cpp utils.h command.h
-utils.o: prompt.h utils.h utils.cpp
+utils.o: prompt.h utils.h utils.cpp history.h history.cpp
+history.o: history.cpp history.h 
 
 
 clean: 
